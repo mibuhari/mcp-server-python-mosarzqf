@@ -7,7 +7,7 @@ mcp = FastMCP("Hello Weather MCP", json_response=True)
 def hello_logic(name: str) -> str:
     return f"Hello, {name}"
     
-@mcp.custom_route("/api/hello", methods=["POST"])
+@mcp.custom_route("/hello", methods=["POST"])
 async def hello_api(request: Request):
     body = await request.json()
     name = body.get("name", "there")
