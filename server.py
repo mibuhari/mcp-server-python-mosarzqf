@@ -26,6 +26,11 @@ def hello(name: str) -> str:
     """Say hello to someone."""
     return f"Hello, {name}!"
 
+@mcp.tool()
+def fetch_weather(city: str, units: str = "celsius") -> str:
+    """Get the current weather for a city."""
+    # your implementation here
+    return f"Weather for {city}"
 
 # custom_route bypasses auth — use only for public endpoints
 @mcp.custom_route("/health", methods=["GET"])
