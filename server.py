@@ -18,6 +18,9 @@ mcp = FastMCP(
     ),
 )
 
+# Shared business logic
+def hello_logic(name: str) -> str:
+    return f"Hello, {name}"
 
 # Add tools below. The docstring is surfaced to LLMs as the tool description.
 # Type hints define the JSON schema for parameters.
@@ -37,6 +40,14 @@ def fetch_weather(city: str, units: str = "celsius") -> str:
 async def health(request: Request) -> Response:
     return JSONResponse({"status": "ok"})
 
+@mcp.custom_route("/api/hello", methods=["POST"])
+async def hello_api(request: Request):
+    body = await request.json()
+    name = body.get("name", "there")
+
+    return JSONResponse({
+        "message": hello_logic(name)
+    })
 
 # Simple bearer token auth. For multi-user or production setups,
 # consider upgrading to the MCP SDK's built-in OAuth 2.1 support.
