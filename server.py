@@ -5,6 +5,7 @@ from starlette.responses import JSONResponse, Response
 from starlette.types import ASGIApp, Receive, Scope, Send
 import hmac
 import os
+import requests
 
 MCP_API_TOKEN = os.environ.get("MCP_API_TOKEN")
 RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
