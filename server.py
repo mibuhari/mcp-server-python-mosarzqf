@@ -87,7 +87,7 @@ async def hello_api(request: Request):
 @mcp.custom_route("/api/weather", methods=["POST"])
 async def weather_api(request: Request):
     body = await request.json()
-    name = body.get("city", "chennai")
+    city = body.get("city", "chennai")
 
     return JSONResponse({
         "message": weather_logic(city)
