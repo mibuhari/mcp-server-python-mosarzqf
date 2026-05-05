@@ -6,3 +6,4 @@ anyio[trio]
 pytest-anyio
 httpx
 asgi-lifespan
+requests
