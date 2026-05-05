@@ -3,9 +3,26 @@ import requests
 
 mcp = FastMCP("Hello Weather MCP", json_response=True)
 
+# Shared business logic
+def hello_logic(name: str) -> str:
+    return f"Hello, {name}"
+    
+@mcp.custom_route("/api/hello", methods=["POST"])
+async def hello_api(request: Request):
+    body = await request.json()
+    name = body.get("name", "there")
+
+    return JSONResponse({
+        "message": hello_logic(name)
+    })
+
 
 @mcp.tool()
 def say_hello(name: str) -> str:
+    return hello_logic(name)
+    
+@mcp.tool()
+def say_hello1(name: str) -> str:
     """Return a greeting for the given name."""
     return f"Hello, {name}"
 
