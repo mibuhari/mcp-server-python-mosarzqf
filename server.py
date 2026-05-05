@@ -22,6 +22,41 @@ mcp = FastMCP(
 def hello_logic(name: str) -> str:
     return f"Hello, {name}"
 
+
+def weather_logic(city: str) -> dict:
+    geo = requests.get(
+        "https://geocoding-api.open-meteo.com/v1/search",
+        params={"name": city, "count": 1, "language": "en", "format": "json"},
+        timeout=10,
+    )
+    geo.raise_for_status()
+    geo_data = geo.json()
+
+    if not geo_data.get("results"):
+        return {"error": f"City not found: {city}"}
+
+    loc = geo_data["results"][0]
+
+    weather = requests.get(
+        "https://api.open-meteo.com/v1/forecast",
+        params={
+            "latitude": loc["latitude"],
+            "longitude": loc["longitude"],
+            "current": "temperature_2m,relative_humidity_2m,wind_speed_10m",
+        },
+        timeout=10,
+    )
+    weather.raise_for_status()
+    current = weather.json()["current"]
+
+    return {
+        "city": loc["name"],
+        "country": loc.get("country"),
+        "temperature_c": current["temperature_2m"],
+        "humidity_percent": current["relative_humidity_2m"],
+        "wind_speed_kmh": current["wind_speed_10m"],
+    }
+    
 # Add tools below. The docstring is surfaced to LLMs as the tool description.
 # Type hints define the JSON schema for parameters.
 @mcp.tool()
@@ -49,6 +84,15 @@ async def hello_api(request: Request):
         "message": hello_logic(name)
     })
 
+@mcp.custom_route("/api/weather", methods=["POST"])
+async def weather_api(request: Request):
+    body = await request.json()
+    name = body.get("city", "chennai")
+
+    return JSONResponse({
+        "message": weather_logic(city)
+    })
+    
 # Simple bearer token auth. For multi-user or production setups,
 # consider upgrading to the MCP SDK's built-in OAuth 2.1 support.
 class BearerAuthMiddleware:
